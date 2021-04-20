@@ -1,0 +1,7 @@
+Assumptions about fields for WhenExcelCannotCopeWithDates().txt
+
+Original Fields											
+Event Name	Date	Start Time	End Time
+								
+Post-Macro Fields											
+Event Name	Unformatted Close Day	Unformatted Close Month	Unformatted Close Year	Reassembled Date for Excel because Microsoft can't figure this out	Reformatted Date	Old Start Time	Start Time	Old End Time	End Time	Event Date and Start Time	Event Date and End Time

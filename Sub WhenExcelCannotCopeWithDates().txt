@@ -1,0 +1,101 @@
+Sub WhenExcelCannotCopeWithDates()
+'
+' Parsing & Reassembling What Humans Can Recognize as Dates but Excel Can't Macro
+
+' Establish the Last Row
+    LastRow = Cells.SpecialCells(xlCellTypeLastCell).Row
+
+    'Insert extra columns for date and time formatting
+
+    Columns("C:F").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Columns("H:H").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    Columns("K:K").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+    
+   'LOOP THROUGH EACH ROW OF DATA AND PERFORM ANY ROW BY ROW OPERATIONS
+    Dim sh As Worksheet
+    Dim rw As Range
+    Dim RowCount As Integer
+    Dim FirstName, LastName, FullName As String
+    Dim LastWord As String
+
+    RowCount = 0
+
+    Set sh = ActiveSheet
+    For Each rw In sh.Rows
+
+      If sh.Cells(rw.Row, 1).Value = "" Then
+        Exit For
+      End If
+
+    If rw.Row > 1 Then
+        
+        'Parse date into three columns
+            'was "Range("B1) instead of Column("B:B")
+        
+        Columns("B:B").Select
+            
+            Selection.TextToColumns Destination:=Columns("B:B"), DataType:=xlDelimited, _
+            TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+            Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+            :="/", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1)), _
+            TrailingMinusNumbers:=True
+        
+        Columns("E:E").Select
+        Selection.NumberFormat = "m/d/yyyy"
+        
+        sh.Cells(rw.Row, 5).Value = "=RC[-1]&""-""&RC[-2]&""-""&RC[-3]"
+        
+        'Format date
+        
+        Columns("F:F").Select
+        sh.Cells(rw.Row, 6).Value = "=TEXT(RC[-1], ""yyyy-mm-dd"")"
+        
+        'Format Start & End Times
+            
+        Columns("H:H").Select
+        sh.Cells(rw.Row, 8).Value = "=TEXT(RC[-1], ""hh:mm:ss AM/PM"")"
+        sh.Cells(rw.Row, 10).Value = "=TEXT(RC[-1], ""hh:mm:ss AM/PM"")"
+        
+        'Combine Confirmed Event Date and Start Time
+        sh.Cells(rw.Row, 11).Value = sh.Cells(rw.Row, 6).Value & " " & sh.Cells(rw.Row, 8).Value
+
+        'Combine Confirmed Event Date and End Time
+        sh.Cells(rw.Row, 12).Value = sh.Cells(rw.Row, 6).Value & " " & sh.Cells(rw.Row, 10).Value
+
+        
+        End If
+        
+            RowCount = RowCount + 1
+
+    Next rw
+
+    'Add new column labels
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Day"
+    Range("C1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Month"
+    Range("D1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Year"
+    Range("E1").Select
+    ActiveCell.FormulaR1C1 = "Reassembled Date for Excel because Microsoft can't figure this out"
+    Range("F1").Select
+    ActiveCell.FormulaR1C1 = "Reformatted Date"
+    Range("G1").Select
+    ActiveCell.FormulaR1C1 = "Old Start Time"
+    Range("H1").Select
+    ActiveCell.FormulaR1C1 = "Start Time"
+    Range("I1").Select
+    ActiveCell.FormulaR1C1 = "Old End Time"
+    Range("J1").Select
+    ActiveCell.FormulaR1C1 = "End Time"
+    Range("K1").Select
+    ActiveCell.FormulaR1C1 = "Event Date and Start Time"
+    Range("L1").Select
+    ActiveCell.FormulaR1C1 = "Event Date and End Time"
+    
+End Sub
+
+

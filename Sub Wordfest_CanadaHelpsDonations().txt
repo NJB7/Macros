@@ -1,0 +1,258 @@
+Sub Wordfest_CanadaHelps()
+'
+' Wordfest_CanadaHelps Macro
+'
+
+' Establish the Last Row
+LastRow = Cells.SpecialCells(xlCellTypeLastCell).Row
+
+'DELETE UNNECESSARY COLUMNS
+
+    Columns("BH:BD").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("BB:AZ").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AX").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AU:AT").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AR:AL").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AJ:AA").Select
+    Selection.Delete Shift:=xlToLeft
+     
+    Columns("X:T").Select
+    Selection.Delete Shift:=xlToLeft
+
+'Rename columns to match mapping file
+
+    Range("A1").Select
+    ActiveCell.FormulaR1C1 = "Transaction Number"
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "WF Payment Method"
+    Range("C1").Select
+    ActiveCell.FormulaR1C1 = "CH Receipt Number"
+    Range("D1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 Salutation"
+    Range("E1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 First Name"
+    Range("F1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 Last Name"
+    Range("G1").Select
+    ActiveCell.FormulaR1C1 = "Account1 Name"
+    Range("H1").Select
+    ActiveCell.FormulaR1C1 = "Home Street"
+    Range("J1").Select
+    ActiveCell.FormulaR1C1 = "Home City"
+    Range("K1").Select
+    ActiveCell.FormulaR1C1 = "Home State/Province"
+    Range("L1").Select
+    ActiveCell.FormulaR1C1 = "Home Zip/Postal Code"
+    Range("M1").Select
+    ActiveCell.FormulaR1C1 = "Home Country"
+    Range("N1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 Personal Email"
+    
+    Range("Q1").Select
+    ActiveCell.FormulaR1C1 = "Fund Designation"
+    
+    Range("R1").Select
+    ActiveCell.FormulaR1C1 = "Donation Amount"
+    Range("S1").Select
+    ActiveCell.FormulaR1C1 = "Donation Date"
+    Range("T1").Select
+    ActiveCell.FormulaR1C1 = "Honoree Name"
+    Range("U1").Select
+    ActiveCell.FormulaR1C1 = "In Memory Of"
+    Range("V1").Select
+    ActiveCell.FormulaR1C1 = "Donation Description"
+    Range("W1").Select
+    ActiveCell.FormulaR1C1 = "CH Donation Source"
+    Range("X1").Select
+    ActiveCell.FormulaR1C1 = "CH Page Title"
+    Range("Z1").Select
+    ActiveCell.FormulaR1C1 = "Donor Thanked"
+    Range("AA1").Select
+    ActiveCell.FormulaR1C1 = "Blank Column because Nicole didn't feel like re-writing the rest of the macro"
+    Range("AB1").Select
+    ActiveCell.FormulaR1C1 = "Donation Name"
+    Range("AC1").Select
+    ActiveCell.FormulaR1C1 = "Donation Record Type Name"
+    Range("AD1").Select
+    ActiveCell.FormulaR1C1 = "Donation Stage"
+    Range("AE1").Select
+    ActiveCell.FormulaR1C1 = "Account1 Street"
+    Range("AF1").Select
+    ActiveCell.FormulaR1C1 = "Account1 City"
+    Range("AG1").Select
+    ActiveCell.FormulaR1C1 = "Account1 State/Province"
+    Range("AH1").Select
+    ActiveCell.FormulaR1C1 = "Account1 Zip/Postal Code"
+    Range("AI1").Select
+    ActiveCell.FormulaR1C1 = "Account1 Country"
+    Range("AJ1").Select
+    ActiveCell.FormulaR1C1 = "Donation Donor"
+    Range("AK1").Select
+    ActiveCell.FormulaR1C1 = "Account1 Email"
+    Range("AL1").Select
+    ActiveCell.FormulaR1C1 = "Account Record Type Id"
+    
+    Range("AM1").Select
+    ActiveCell.FormulaR1C1 = "Donation Source"
+    
+    
+    
+  
+    '*************************************************************************
+    
+    
+    'LOOP THROUGH EACH ROW OF DATA AND PERFORM ANY ROW BY ROW OPERATIONS
+    Dim sh As Worksheet
+    Dim rw As Range
+    Dim RowCount As Integer
+    Dim DonationDate As String
+
+
+
+    RowCount = 0
+
+    Set sh = ActiveSheet
+    For Each rw In sh.Rows
+
+      If sh.Cells(rw.Row, 1).Value = "" Then
+        Exit For
+      End If
+
+      If rw.Row > 1 Then
+
+
+        'Set Donation Record Type on all
+        sh.Cells(rw.Row, 29).Value = "Donation"
+
+        'Set Stage to Posted on all
+        sh.Cells(rw.Row, 30).Value = "Posted"
+
+        'Rename N/A to FALSE for email opt out
+        If sh.Cells(rw.Row, 16).Value = "N/A" Then
+         sh.Cells(rw.Row, 16).Value = "FALSE"
+        End If
+        
+        'Rename email address for matching on ANON donations
+        If UCase(sh.Cells(rw.Row, 6).Value) = "ANON" Then
+         sh.Cells(rw.Row, 14).Value = "anonymous@wordfest.com"
+         sh.Cells(rw.Row, 4).Value = ""
+            sh.Cells(rw.Row, 7).Value = ""
+            sh.Cells(rw.Row, 8).Value = ""
+            sh.Cells(rw.Row, 9).Value = ""
+            sh.Cells(rw.Row, 10).Value = ""
+            sh.Cells(rw.Row, 11).Value = ""
+            sh.Cells(rw.Row, 12).Value = ""
+            sh.Cells(rw.Row, 13).Value = ""
+        End If
+
+' Change CA to Canada in Country Column
+
+        Columns("M:M").Select
+        Selection.Replace What:="CA", Replacement:="Canada", LookAt:=xlWhole, _
+        SearchOrder:=xlByColumns, MatchCase:=False
+        
+          'ReplaceFacebookMobile Macro
+
+    Cells.Replace What:="Paypal", Replacement:="Transferred", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+    Cells.Replace What:="Cheque", Replacement:="Transferred", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+    Cells.Replace What:="Credit Card", Replacement:="Transferred", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+        
+        
+        'If column F has a value, move address details from NPSP_HOME_abcd to NPSP_ACCOUNT1_abcd
+        'Note-this doesn't work quite right yet, but that's ok if they're entered manually
+        
+        If sh.Cells(rw.Row, 7).Value <> "" And sh.Cells(rw.Row, 6).Value = "" Then
+            'Street
+            sh.Cells(rw.Row, 31).Value = sh.Cells(rw.Row, 8).Value
+            'City
+            sh.Cells(rw.Row, 32).Value = sh.Cells(rw.Row, 10).Value
+            'State/Province
+            sh.Cells(rw.Row, 33).Value = sh.Cells(rw.Row, 11).Value
+            'Zip/Postal
+            sh.Cells(rw.Row, 34).Value = sh.Cells(rw.Row, 12).Value
+            'Country
+            sh.Cells(rw.Row, 35).Value = sh.Cells(rw.Row, 13).Value
+            'Copy Email to Account
+            sh.Cells(rw.Row, 37).Value = sh.Cells(rw.Row, 14).Value
+                       
+                        
+            'Set Donation Donor (used by NPSP Data Import Tool) on Donation to Contact
+            sh.Cells(rw.Row, 36).Value = "Account1"
+            
+            'Set Record Type on Account to Organization
+            sh.Cells(rw.Row, 38).Value = "0121U0000019S6p"
+
+            'Blank out Contact Address Fields since this is an Account
+            sh.Cells(rw.Row, 8).Value = ""
+            sh.Cells(rw.Row, 9).Value = ""
+            sh.Cells(rw.Row, 10).Value = ""
+            sh.Cells(rw.Row, 11).Value = ""
+            sh.Cells(rw.Row, 12).Value = ""
+            sh.Cells(rw.Row, 13).Value = ""
+            sh.Cells(rw.Row, 14).Value = ""
+            sh.Cells(rw.Row, 15).Value = ""
+            
+
+            'Set Donation Name
+            sh.Cells(rw.Row, 28).Value = sh.Cells(rw.Row, 7).Value & " - CanadaHelps - " & sh.Cells(rw.Row, 19).Value
+
+        Else
+            'Set Donation Donor (used by NPSP Data Import Tool) on Donation to Contact
+            sh.Cells(rw.Row, 36).Value = "Contact1"
+            
+            'Set Donation Name
+            sh.Cells(rw.Row, 28).Value = sh.Cells(rw.Row, 5).Value & " " & sh.Cells(rw.Row, 6).Value & " - CanadaHelps - " & sh.Cells(rw.Row, 19).Value
+
+        End If
+
+    'Rename new column to Donor
+    Range("AN1").Select
+    ActiveCell.FormulaR1C1 = "Donor"
+        
+        'Fill Donor Column so the Salesforce box will be checked
+        sh.Cells(rw.Row, 40).Value = "True"
+        
+    ' Fill the Donation Source column with CanadaHelps
+
+    If UCase(sh.Cells(rw.Row, 39).Value) = "" Then
+    sh.Cells(rw.Row, 39).Value = "Canada Helps"
+    End If
+    
+            
+    
+      End If
+
+      RowCount = RowCount + 1
+
+    Next rw
+    
+      ' Fill the Fund Designation column with Legacy Fund
+    
+    Columns("Q:Q").Select
+    Selection.Replace What:="Legacy Fund", Replacement:="Legacy", LookAt:= _
+     xlWhole, SearchOrder:=xlByColumns, MatchCase:=False
+        
+    ' InsertColumn for Record ID
+
+    Columns("A:A").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+    Range("A1").Select
+    ActiveCell.FormulaR1C1 = "Record ID"
+    
+    
+End Sub
+

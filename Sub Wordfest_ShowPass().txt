@@ -1,0 +1,244 @@
+Sub Wordfest_ShowPass() -- Started by Cloud Pilots, Adapted by Nicole Bergen
+'
+' Wordfest_ShowPass Macro
+'
+
+' Establish the Last Row
+    LastRow = Cells.SpecialCells(xlCellTypeLastCell).Row
+
+'Rename fields to Salesforce field names and add new fields that are required for Salesforce
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "WF_Number_of_Tickets__c"
+    
+    Range("D1").Select
+    ActiveCell.FormulaR1C1 = "npe01__HomeEmail__c"
+    Range("E1").Select
+    ActiveCell.FormulaR1C1 = "WF_Number_of_Tickets_Used__c"
+    
+    Range("F1").Select
+    ActiveCell.FormulaR1C1 = "CloseDate"
+    Range("G1").Select
+    ActiveCell.FormulaR1C1 = "WF_Ticket_Type__c"
+    Range("I1").Select
+    ActiveCell.FormulaR1C1 = "WF_ShowPass_Event_Id__c"
+    
+    'Product Type and Product will go here once we have them clarified
+    'Range("H1").Select
+    'ActiveCell.FormulaR1C1 = "Home Street"
+    'Range("H1").Select
+    'ActiveCell.FormulaR1C1 = "Home Street"
+    
+    
+    Range("N1").Select
+    ActiveCell.FormulaR1C1 = "WF_Sold_By__c"
+    Range("Q1").Select
+    ActiveCell.FormulaR1C1 = "WF_Payment_Method__c"
+
+    Range("S1").Select
+    ActiveCell.FormulaR1C1 = "Amount"
+    Range("Y1").Select
+    ActiveCell.FormulaR1C1 = "WF_Discount_Amount__c"
+    Range("Z1").Select
+    ActiveCell.FormulaR1C1 = "WF_Discount_Code__c"
+    Range("AA1").Select
+    ActiveCell.FormulaR1C1 = "WF_Discount_Percentage__c"
+    
+    Range("AF1").Select
+    ActiveCell.FormulaR1C1 = "WF_Purchase_Platform__c"
+    
+    'Contact First Name
+    Range("AG1").Select
+    ActiveCell.FormulaR1C1 = "FirstName"
+    
+   'Contact Last Name
+    Range("AH1").Select
+    ActiveCell.FormulaR1C1 = "LastName"
+    
+    'Opportunity Record Type Id
+    Range("AI1").Select
+    ActiveCell.FormulaR1C1 = "RecordTypeId"
+    
+    'Opportunity Name
+    Range("AJ1").Select
+    ActiveCell.FormulaR1C1 = "Opportunity Name"
+        
+    'Opportunity Stage
+    Range("AK1").Select
+    ActiveCell.FormulaR1C1 = "StageName"
+    
+    'Opportunity Stage
+    Range("AL1").Select
+    ActiveCell.FormulaR1C1 = "Import_Email_Address__c"
+    
+    'Opportunity Purchase Date Time
+    Range("AM1").Select
+    ActiveCell.FormulaR1C1 = "WF_Purchase_Date_Time__c"
+    
+    
+    
+    
+    'DELETE UNNECESSARY COLUMNS - MAKE SURE THIS IS THE LAST STEP SO
+    'THAT IS DOESN'T MESS UP ABOVE OPERATIONS WITH HARD COLUMN REFERENCES
+    Columns("AB:AE").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("T:X").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("R").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("O:P").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("J:K").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("H").Select
+    Selection.Delete Shift:=xlToLeft
+    
+     Columns("A").Select
+    Selection.Delete Shift:=xlToLeft
+    
+ 
+    '*************************************************************************
+    'Here is the column number mapping once the above operations are completed,
+    'setting the following column numbers, which are referred below:
+    '1   WF_Number_of_Tickets__c
+    '2   Name
+    '3   npe01__HomeEmail__c
+    '4   WF_Number_of_Tickets_Used__c
+    '5   CloseDate
+    '6   WF_Ticket_Type__c
+    '7   WF_ShowPass_Event_Id__c
+    '8   Product Type
+    '9   Product
+    '10  WF_Sold_By__c
+    '11  WF_Payment_Method__c
+    '12  Amount
+    '13  WF_Discount_Amount__c
+    '14  WF_Discount_Code__c
+    '15  WF_Discount_Percentage__c
+    '16  WF_Purchase_Platform__c
+    '17  FirstName
+    '18  LastName
+    '19  RecordTypeId
+    '20  Name
+    '21  StageName
+    '22  Import_Email_Address__c
+    '23  WF_Purchase_Date_Time__c
+    
+    
+'    'LOOP THROUGH EACH ROW OF DATA AND PERFORM ANY ROW BY ROW OPERATIONS
+    Dim sh As Worksheet
+    Dim rw As Range
+    Dim RowCount As Integer
+    Dim FirstName, LastName, FullName As String
+    Dim LastWord As String
+
+    RowCount = 0
+
+    Set sh = ActiveSheet
+    For Each rw In sh.Rows
+
+      If sh.Cells(rw.Row, 1).Value = "" Then
+        Exit For
+      End If
+
+    If rw.Row > 1 Then
+
+        'Parse First and Last Name (Alway pull last word first and use as last name, use remainder as first name)
+        FullName = sh.Cells(rw.Row, 2).Value
+        LastName = ReturnLastWord(FullName)
+        sh.Cells(rw.Row, 18).Value = (LastName)
+        sh.Cells(rw.Row, 17).Value = (Left(FullName, Len(FullName) - Len(LastName)))
+
+        'Parse Date
+        PurchaseDateTime = sh.Cells(rw.Row, 5).Value
+        
+        'This fix was required to handle OS issues creating different date formats.
+        If PurchaseDateTime Like "*/*" Then
+            PurchaseDay = Left(PurchaseDateTime, 2)
+            PurchaseMonth = Mid(PurchaseDateTime, 4, 2)
+            PurchaseYear = Mid(PurchaseDateTime, 7, 4)
+            PurchaseTime = Mid(PurchaseDateTime, 12, 5)
+            CloseDate = PurchaseYear & "-" & PurchaseMonth & "-" & PurchaseDay
+            PurchaseDateTime = CloseDate & " " & PurchaseTime & ":00"
+            
+        Else
+            CloseDate = Left(PurchaseDateTime, 10)
+            
+        End If
+        
+        sh.Cells(rw.Row, 5).Value = CloseDate
+        sh.Cells(rw.Row, 23).Value = PurchaseDateTime
+        
+        
+        'Transform Payment Method from Credit to Credit Card
+        If sh.Cells(rw.Row, 11).Value = "Credit" Then
+         sh.Cells(rw.Row, 11).Value = "Credit Card"
+        End If
+
+        'Set Record Type on Opportunity to Event Ticket Type
+        sh.Cells(rw.Row, 19).Value = "0121U000001Nglo"
+        
+        'Set Opportunity Name
+        sh.Cells(rw.Row, 20).Value = sh.Cells(rw.Row, 2).Value & " - Ticketed Event - " & sh.Cells(rw.Row, 5).Value
+
+        'Set Stage Name
+        'NOTE: Need Status field on export report, wasn't on FULL
+        If sh.Cells(rw.Row, 4).Value = "0" Then
+           sh.Cells(rw.Row, 21).Value = "Purchased"
+        Else
+           sh.Cells(rw.Row, 21).Value = "Attended"
+        End If
+        
+        'Set Import Email Address
+        sh.Cells(rw.Row, 22).Value = sh.Cells(rw.Row, 3).Value
+
+    'Rename new column to Patron
+    Range("X1").Select
+    ActiveCell.FormulaR1C1 = "Patron"
+        'Fill Patron Column so the Salesforce box will be checked
+        sh.Cells(rw.Row, 24).Value = "True"
+        
+    'ReplaceFacebookMobile Macro - added tics to Facebook & Mobile because the upsert should work now but
+        'I didn't want to delete the code
+        
+        
+    'Rename new column to Patron
+    Range("X1").Select
+    ActiveCell.FormulaR1C1 = "Patron"
+        'Fill Patron Column so the Salesforce box will be checked
+        sh.Cells(rw.Row, 24).Value = "True"
+
+    'Cells.Replace What:="Facebook", Replacement:="Unknown", LookAt:=xlPart, _
+        'SearchOrder:=xlByRows, MatchCase:=False
+    'Cells.Replace What:="Mobile", Replacement:="Unknown", LookAt:=xlPart, _
+        'SearchOrder:=xlByRows, MatchCase:=False
+    Cells.Replace What:="Web Box Office", Replacement:="Web", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+
+     End If
+     
+    RowCount = RowCount + 1
+
+    Next rw
+    
+    
+    
+End Sub
+
+Function ReturnLastWord(FullName As String)
+
+Dim stGotIt As String
+
+
+    stGotIt = StrReverse(FullName)
+
+    stGotIt = Left(stGotIt, InStr(1, stGotIt, " ", vbTextCompare))
+
+    ReturnLastWord = StrReverse(Trim(stGotIt))
+
+End Function
+

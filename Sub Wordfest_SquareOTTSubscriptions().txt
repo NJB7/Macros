@@ -1,0 +1,169 @@
+Sub Wordfest_SquareOTTSubscriptions()
+'
+' Wordfest_Square On Demand Subscriptions Macro
+'
+
+' Establish the Last Row
+LastRow = Cells.SpecialCells(xlCellTypeLastCell).Row
+
+'DELETE UNNECESSARY COLUMNS
+
+    Columns("AO:AT").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AK:AM").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("AI").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("Y:AG").Select
+    Selection.Delete Shift:=xlToLeft
+    
+    Columns("F:N").Select
+    Selection.Delete Shift:=xlToLeft
+
+    Columns("D").Select
+    Selection.Delete Shift:=xlToLeft
+    
+'Rename columns to match mapping file
+
+    Range("A1").Select
+    ActiveCell.FormulaR1C1 = "Transaction Number"
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "CloseDate"
+    Range("C1").Select
+    ActiveCell.FormulaR1C1 = "Payment Status"
+    Range("D1").Select
+    ActiveCell.FormulaR1C1 = "Subtotal--Do not use this amount"
+    Range("E1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 First Name"
+    Range("F1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 Last Name"
+    Range("G1").Select
+    ActiveCell.FormulaR1C1 = "npe01__HomeEmail__c"
+    Range("H1").Select
+    ActiveCell.FormulaR1C1 = "Home Street"
+    Range("I1").Select
+    ActiveCell.FormulaR1C1 = "Home Street 2"
+    Range("J1").Select
+    ActiveCell.FormulaR1C1 = "Home Zip/Postal Code"
+    Range("K1").Select
+    ActiveCell.FormulaR1C1 = "Home City"
+    Range("L1").Select
+    ActiveCell.FormulaR1C1 = "Home State/Province"
+    Range("M1").Select
+    ActiveCell.FormulaR1C1 = "Home Country"
+    Range("N1").Select
+    ActiveCell.FormulaR1C1 = "Contact1 Personal Phone"
+    
+    Range("O1").Select
+    ActiveCell.FormulaR1C1 = "WF_Ticket_Type__c"
+    Range("P1").Select
+    ActiveCell.FormulaR1C1 = "WF_Number_of_Tickets__c"
+    Range("Q1").Select
+    ActiveCell.FormulaR1C1 = "Payment Amount Before Taxes"
+    Range("R1").Select
+    ActiveCell.FormulaR1C1 = "WF_Purchase_Platform__c"
+    
+    'Payment Method - Square
+    
+    Range("S1").Select
+    ActiveCell.FormulaR1C1 = "Opportunity Name"
+    Range("T1").Select
+    ActiveCell.FormulaR1C1 = "Opportunity Record Type Name"
+    Range("U1").Select
+    ActiveCell.FormulaR1C1 = "Stage"
+    Range("V1").Select
+    ActiveCell.FormulaR1C1 = "Patron"
+
+    Range("W1").Select
+    ActiveCell.FormulaR1C1 = "Import_Email_Address__c"
+    Range("X1").Select
+    ActiveCell.FormulaR1C1 = "WF_Purchase_Date_Time__c"
+    
+    Range("Y1").Select
+    ActiveCell.FormulaR1C1 = "Payment Method"
+    
+    'Opportunity Record Type Id
+    Range("Z1").Select
+    ActiveCell.FormulaR1C1 = "RecordTypeId"
+     
+    'Enter manually before upsert
+    Range("aa1").Select
+    ActiveCell.FormulaR1C1 = "Campaign_Event_Id__c"
+
+
+    '*************************************************************************
+    
+    
+    'LOOP THROUGH EACH ROW OF DATA AND PERFORM ANY ROW BY ROW OPERATIONS
+    Dim sh As Worksheet
+    Dim rw As Range
+    Dim RowCount As Integer
+    Dim DonationDate As String
+
+
+
+    RowCount = 0
+
+    Set sh = ActiveSheet
+    For Each rw In sh.Rows
+
+      If sh.Cells(rw.Row, 1).Value = "" Then
+        Exit For
+      End If
+
+      If rw.Row > 1 Then
+
+        'Change CA to Canada in Country Column
+        Columns("M:M").Select
+        Selection.Replace What:="CA", Replacement:="Canada", LookAt:=xlWhole, _
+        SearchOrder:=xlByColumns, MatchCase:=False
+        
+        'Fill the Source column with Square
+        If UCase(sh.Cells(rw.Row, 18).Value) = "" Then
+        sh.Cells(rw.Row, 18).Value = "Square"
+        End If
+        
+        'Set Donation Name
+        sh.Cells(rw.Row, 19).Value = sh.Cells(rw.Row, 5).Value & " " & sh.Cells(rw.Row, 6).Value & " " & "- On Demand Subscription - " & sh.Cells(rw.Row, 2).Value
+            
+        'Set Donation Record Type on all
+        sh.Cells(rw.Row, 20).Value = "PROD - Event Ticket"
+
+        'Set Stage to Purchased on all
+        sh.Cells(rw.Row, 21).Value = "Purchased"
+
+        'Set Import Email Address
+        sh.Cells(rw.Row, 23).Value = sh.Cells(rw.Row, 7).Value
+        
+        'Fill Patron Column so the Salesforce box will be checked
+        sh.Cells(rw.Row, 22).Value = "True"
+        
+        'Set Purchase Date & Time
+        sh.Cells(rw.Row, 24).Value = sh.Cells(rw.Row, 2).Value
+        
+        'Set Payment Method
+        sh.Cells(rw.Row, 25).Value = "Square"
+        
+        'Set Record Type on Opportunity to Event Ticket Type
+        sh.Cells(rw.Row, 26).Value = "0121U000001Nglo"
+            
+        End If
+    
+      RowCount = RowCount + 1
+
+    Next rw
+        
+    ' InsertColumn for Record ID
+
+    Columns("A:A").Select
+    Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+    Range("A1").Select
+    ActiveCell.FormulaR1C1 = "Record ID"
+    
+    
+End Sub
+

@@ -1,0 +1,46 @@
+
+Sub AlterWillCallforFinancialsv2()
+
+' DelectWillCallColumns Macro
+' Except Email and Status
+
+    Columns("A:C").Select
+    Selection.Delete Shift:=xlToLeft
+    Columns("B:B").Select
+    Selection.Delete Shift:=xlToLeft
+    Columns("C:AH").Select
+    Selection.Delete Shift:=xlToLeft
+    
+' ReplaceStatus Macro
+' Replace scanned with 1 Replace issued with 0 Leave voided as is
+
+    Cells.Replace What:="Issued", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+    Cells.Replace What:="Scanned", Replacement:="1", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False
+        
+' SortEmail Macro
+' Alphabetically.
+
+With ActiveSheet.Sort
+     .SortFields.Add Key:=Range("A1"), Order:=xlAscending
+     .SetRange Range("A1:AF1000")
+     .Header = xlYes
+     .Apply
+End With
+
+
+        
+' Consolidate Macro
+' Sum status contents & consolidate based on email addresses
+
+    Sheets.Add After:=ActiveSheet
+    Sheets("Sheet1").Select
+    Application.CutCopyMode = False
+    Selection.Consolidate Sources:= _
+        "'/Users/nicolebergen/Wordfest Dropbox/05_operations/Ticketing/Ticketing_IMPORTS/1. Combining Showpass will_call & financials/[Will_Call.csv]Will_Call'!C1:C2" _
+        , Function:=xlSum, TopRow:=True, LeftColumn:=True, CreateLinks:=False
+
+        
+        
+End Sub
