@@ -1,0 +1,109 @@
+Sub CleanDate()
+'
+' CleanDate Macro
+'
+
+'
+'    Range("I1").Select
+ '   ActiveCell.FormulaR1C1 = "cleaned_date"
+  '  Range("I2").Select
+    
+'
+' Parsing & Reassembling What Humans Can Recognize as Dates but Excel Can't Macro
+
+' DisableAlerts
+    Application.DisplayAlerts = False
+
+
+' Establish the Last Row
+    LastRow = Cells.SpecialCells(xlCellTypeLastCell).Row
+    
+   'LOOP THROUGH EACH ROW OF DATA AND PERFORM ANY ROW BY ROW OPERATIONS
+    Dim sh As Worksheet
+    Dim rw As Range
+    Dim RowCount As Integer
+    Dim FirstName, LastName, FullName As String
+    Dim LastWord As String
+
+    RowCount = 0
+
+    Set sh = ActiveSheet
+    For Each rw In sh.Rows
+
+      If sh.Cells(rw.Row, 1).Value = "" Then
+        Exit For
+      End If
+
+    If rw.Row > 1 Then
+    
+        'Prelim format, if excel is feeling cooperative
+        
+        Columns("H:H").Select
+        Selection.NumberFormat = "d/m/yyyy"
+        
+        'Replace / with -
+        
+        Columns("H:H").Select
+        sh.Cells(rw.Row, 8).Replace What:="/", Replacement:="-"
+        
+        'Parse date into three columns
+        
+        Columns("H:H").Select
+            
+            Selection.TextToColumns Destination:=Columns("I:I"), datatype:=xlDelimited, _
+            TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
+            Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+            :="-", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1)), _
+            TrailingMinusNumbers:=True
+        
+'        Columns("I:I").Select
+ '       Selection.NumberFormat = "0"
+    
+        'Reassemble them
+                
+        Columns("L:L").Select
+        Selection.NumberFormat = "yyyy-m-d"
+        
+        sh.Cells(rw.Row, 12).Value = "=RC[-1]&""-""&RC[-2]&""-""&RC[-3]"
+        
+        'Format date - Short
+        
+        Columns("M:M").Select
+        Selection.NumberFormat = "yyyy-mm-dd"
+        
+        sh.Cells(rw.Row, 13).Value = "=TEXT(RC[-1], ""yyyy-mm-dd"")"
+ 
+         'Format date - Long
+        
+        Columns("N:N").Select
+        Selection.NumberFormat = "dddd, mmmm dd, yyyy"
+        
+        sh.Cells(rw.Row, 14).Value = "=TEXT(RC[-1], ""dddd, mmmm dd, yyyy"")"
+        
+        End If
+        
+            RowCount = RowCount + 1
+
+    Next rw
+
+    'Add new column labels
+    Range("H1").Select
+    ActiveCell.FormulaR1C1 = "Formatted Short Date, take 1"
+    Range("I1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Day"
+    Range("J1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Month"
+    Range("K1").Select
+    ActiveCell.FormulaR1C1 = "Unformatted Year"
+    Range("L1").Select
+    ActiveCell.FormulaR1C1 = "Reassembled Date for Excel because Microsoft always can't figure this out"
+    Range("M1").Select
+    ActiveCell.FormulaR1C1 = "Short Date, take 2"
+    Range("N1").Select
+    ActiveCell.FormulaR1C1 = "Long Date"
+
+    'EnableAlerts
+    Application.DisplayAlerts = False
+
+
+End Sub
